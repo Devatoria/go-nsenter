@@ -1,2 +1,3 @@
-# go-namespaces
-Golang library to manipulate namespaces with nsenter
+# go-nsenter
+
+Golang library to execute program into process namespaces using `nsenter`.
