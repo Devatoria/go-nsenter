@@ -1,5 +1,7 @@
 # go-nsenter
 
+[![GoDoc](https://godoc.org/github.com/Devatoria/go-nsenter?status.svg)](https://godoc.org/github.com/Devatoria/go-nsenter)
+
 Golang library to execute program into process namespaces using `nsenter`.
 
 ## Example
