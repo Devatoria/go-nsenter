@@ -33,5 +33,5 @@ func main() {
 
 ## Features
 
-- [ ] Allow to specify a file to use to enter namespace
+- [X] Allow to specify a file to use to enter namespace
 - [X] Return stdout/stderr of the executed command

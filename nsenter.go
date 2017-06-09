@@ -11,19 +11,26 @@ import (
 // nsenter command
 type Config struct {
 	Cgroup              bool   // Enter cgroup namespace
+	CgroupFile          string // Cgroup namespace location, default to /proc/PID/ns/cgroup
 	FollowContext       bool   // Set SELinux security context
 	GID                 int    // GID to use to execute given program
 	IPC                 bool   // Enter IPC namespace
+	IPCFile             string // IPC namespace location, default to /proc/PID/ns/ipc
 	Mount               bool   // Enter mount namespace
+	MountFile           string // Mount namespace location, default to /proc/PID/ns/mnt
 	Net                 bool   // Enter network namespace
+	NetFile             string // Network namespace location, default to /proc/PID/ns/net
 	NoFork              bool   // Do not fork before executing the specified program
 	PID                 bool   // Enter PID namespace
+	PIDFile             string // PID namespace location, default to /proc/PID/ns/pid
 	PreserveCredentials bool   // Preserve current UID/GID when entering namespaces
 	RootDirectory       string // Set the root directory, default to target process root directory
 	Target              int    // Target PID (required)
 	UID                 int    // UID to use to execute given program
 	User                bool   // Enter user namespace
+	UserFile            string // User namespace location, default to /proc/PID/ns/user
 	UTS                 bool   // Enter UTS namespace
+	UTSFile             string // UTS namespace location, default to /proc/PID/ns/uts
 	WorkingDirectory    string // Set the working directory, default to target process working directory
 }
 
@@ -60,7 +67,11 @@ func (c *Config) buildCommand() (*exec.Cmd, error) {
 	args = append(args, "--target", strconv.Itoa(c.Target))
 
 	if c.Cgroup {
-		args = append(args, "--cgroup")
+		if c.CgroupFile != "" {
+			args = append(args, fmt.Sprintf("--cgroup=%s", c.CgroupFile))
+		} else {
+			args = append(args, "--cgroup")
+		}
 	}
 
 	if c.FollowContext {
@@ -72,15 +83,27 @@ func (c *Config) buildCommand() (*exec.Cmd, error) {
 	}
 
 	if c.IPC {
-		args = append(args, "--ipc")
+		if c.IPCFile != "" {
+			args = append(args, fmt.Sprintf("--ip=%s", c.IPCFile))
+		} else {
+			args = append(args, "--ipc")
+		}
 	}
 
 	if c.Mount {
-		args = append(args, "--mount")
+		if c.MountFile != "" {
+			args = append(args, fmt.Sprintf("--mount=%s", c.MountFile))
+		} else {
+			args = append(args, "--mount")
+		}
 	}
 
 	if c.Net {
-		args = append(args, "--net")
+		if c.NetFile != "" {
+			args = append(args, fmt.Sprintf("--net=%s", c.NetFile))
+		} else {
+			args = append(args, "--net")
+		}
 	}
 
 	if c.NoFork {
@@ -88,7 +111,11 @@ func (c *Config) buildCommand() (*exec.Cmd, error) {
 	}
 
 	if c.PID {
-		args = append(args, "--pid")
+		if c.PIDFile != "" {
+			args = append(args, fmt.Sprintf("--pid=%s", c.PIDFile))
+		} else {
+			args = append(args, "--pid")
+		}
 	}
 
 	if c.PreserveCredentials {
@@ -104,11 +131,19 @@ func (c *Config) buildCommand() (*exec.Cmd, error) {
 	}
 
 	if c.User {
-		args = append(args, "--user")
+		if c.UserFile != "" {
+			args = append(args, fmt.Sprintf("--user=%s", c.UserFile))
+		} else {
+			args = append(args, "--user")
+		}
 	}
 
 	if c.UTS {
-		args = append(args, "--uts")
+		if c.UTSFile != "" {
+			args = append(args, fmt.Sprintf("--uts=%s", c.UTSFile))
+		} else {
+			args = append(args, "--uts")
+		}
 	}
 
 	if c.WorkingDirectory != "" {
