@@ -2,6 +2,7 @@ package nsenter
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os/exec"
 	"strconv"
@@ -34,10 +35,15 @@ type Config struct {
 	WorkingDirectory    string // Set the working directory, default to target process working directory
 }
 
-// Execute the given program using the given nsenter configuration
-// and return stdout/stderr or an error if command has failed
+// Execute executs the givne command with a default background context
 func (c *Config) Execute(program string, args ...string) (string, string, error) {
-	cmd, err := c.buildCommand()
+	return c.ExecuteContext(context.Background(), program, args...)
+}
+
+// ExecuteContext the given program using the given nsenter configuration and given context
+// and return stdout/stderr or an error if command has failed
+func (c *Config) ExecuteContext(ctx context.Context, program string, args ...string) (string, string, error) {
+	cmd, err := c.buildCommand(ctx)
 	if err != nil {
 		return "", "", fmt.Errorf("Error while building command: %v", err)
 	}
@@ -58,7 +64,7 @@ func (c *Config) Execute(program string, args ...string) (string, string, error)
 	return stdout.String(), stderr.String(), nil
 }
 
-func (c *Config) buildCommand() (*exec.Cmd, error) {
+func (c *Config) buildCommand(ctx context.Context) (*exec.Cmd, error) {
 	if c.Target == 0 {
 		return nil, fmt.Errorf("Target must be specified")
 	}
@@ -150,7 +156,7 @@ func (c *Config) buildCommand() (*exec.Cmd, error) {
 		args = append(args, "--wd", c.WorkingDirectory)
 	}
 
-	cmd := exec.Command("nsenter", args...)
+	cmd := exec.CommandContext(ctx, "nsenter", args...)
 
 	return cmd, nil
 }
