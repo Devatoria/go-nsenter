@@ -11,6 +11,7 @@ import (
 // Config is the nsenter configuration used to generate
 // nsenter command
 type Config struct {
+	AllNamespaces       bool   // Enter all namespaces of the target process
 	Cgroup              bool   // Enter cgroup namespace
 	CgroupFile          string // Cgroup namespace location, default to /proc/PID/ns/cgroup
 	FollowContext       bool   // Set SELinux security context
@@ -71,6 +72,10 @@ func (c *Config) buildCommand(ctx context.Context) (*exec.Cmd, error) {
 
 	var args []string
 	args = append(args, "--target", strconv.Itoa(c.Target))
+
+	if c.AllNamespaces {
+		args = append(args, "--all")
+	}
 
 	if c.Cgroup {
 		if c.CgroupFile != "" {
